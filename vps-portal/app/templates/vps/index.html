@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Instances — VPS Control Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">VPS Instances</h1>
+    <p class="page-subtitle">{{ instances|length }} instance{% if instances|length != 1 %}s{% endif %} in your account</p>
+  </div>
+  <button class="btn btn-secondary" onclick="location.reload()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+    Refresh
+  </button>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+{% if not instances and not error %}
+<div class="empty-state">
+  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+  <p>No VPS instances found in your account.</p>
+</div>
+{% endif %}
+
+<div class="instance-grid">
+  {% for vps in instances %}
+  <a href="{{ url_for('vps.detail', vps_name=vps.name) }}" class="instance-card">
+    <div class="instance-card-header">
+      <div class="instance-name">{{ vps.displayName }}</div>
+      <span class="status-badge status-{{ vps.state }}">{{ vps.state }}</span>
+    </div>
+    <div class="instance-meta">
+      <span class="meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/></svg>
+        {{ vps.vcore }} vCPU{% if vps.ram %} · {{ vps.ram }} MB RAM{% endif %}
+      </span>
+      {% if vps.zone %}
+      <span class="meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        {{ vps.zone }}
+      </span>
+      {% endif %}
+      {% if vps.ips %}
+      <span class="meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+        {{ vps.ips | join(', ') }}
+      </span>
+      {% endif %}
+    </div>
+    <div class="instance-card-footer">
+      <span class="vps-id">{{ vps.name }}</span>
+      <span class="view-link">View details →</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

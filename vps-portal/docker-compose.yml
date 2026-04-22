@@ -1,0 +1,24 @@
+services:
+  vps-portal:
+    build: .
+    container_name: vps-portal
+    restart: unless-stopped
+    environment:
+      - OVH_ENDPOINT=${OVH_ENDPOINT:-ovh-ca}
+      - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
+      - OVH_APPLICATION_SECRET=${OVH_APPLICATION_SECRET}
+      - OVH_CONSUMER_KEY=${OVH_CONSUMER_KEY}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      - VIEWER_USERNAME=${VIEWER_USERNAME:-viewer}
+      - VIEWER_PASSWORD_HASH=${VIEWER_PASSWORD_HASH}
+    networks:
+      - caddy_net
+    labels:
+      - "caddy.reverse_proxy=vps-portal:5000"
+
+networks:
+  caddy_net:
+    external: true
+    name: caddy_net

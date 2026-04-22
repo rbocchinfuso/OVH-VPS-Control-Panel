@@ -1,0 +1,31 @@
+# Add this block to your existing Caddyfile
+# (or include it with `import /etc/caddy/vps-portal.caddy`)
+
+vps-control.pscp-css.support {
+    # Optional: restrict to internal IP ranges
+    # @internal {
+    #     remote_ip 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+    # }
+    # handle @internal {
+    #     reverse_proxy vps-portal:5000
+    # }
+    # respond "Forbidden" 403
+
+    reverse_proxy vps-portal:5000 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    log {
+        output file /var/log/caddy/vps-portal.log
+    }
+}
