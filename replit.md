@@ -37,9 +37,12 @@ A standalone Python/Flask container lives in `vps-portal/`. It is **not** part o
 - **Roles**: `admin` (view + snapshot + reboot), `viewer` (view only)
 - **Docker + docker-compose** with Caddy network integration
 
+### Caddy auto-registration
+The container uses `caddy-docker-proxy` labels. When it starts it self-registers with the running Caddy container — no manual Caddyfile editing or reload needed. See `caddy-docker-proxy.example.yml` for setting up Caddy itself.
+
 ### Deployment
 1. Copy `vps-portal/` to the target server
-2. Run `./setup.sh` to generate `.env` with hashed passwords
-3. Add OVH credentials to `.env`
-4. `docker compose up -d --build`
-5. Add `Caddyfile.snippet` to Caddy config and reload
+2. Ensure `docker network create caddy_net` exists (same network Caddy is on)
+3. Run `./setup.sh` to generate `.env` with hashed passwords
+4. Add OVH credentials to `.env`
+5. `docker compose up -d --build` — Caddy picks up the labels automatically

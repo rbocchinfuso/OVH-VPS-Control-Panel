@@ -1,0 +1,44 @@
+# caddy-docker-proxy.example.yml
+#
+# Reference compose file for running lucaslorentz/caddy-docker-proxy.
+# If you already have Caddy running via caddy-docker-proxy, skip this file —
+# your existing Caddy instance will pick up the vps-portal labels automatically.
+#
+# If you need to set it up for the first time:
+#   docker network create caddy_net
+#   docker compose -f caddy-docker-proxy.example.yml up -d
+#
+# Then start the portal normally:
+#   docker compose up -d --build
+
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:ci-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    volumes:
+      # Docker socket — required for caddy-docker-proxy to watch containers
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Persists TLS certificates and Caddy state across restarts
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - caddy_net
+    environment:
+      - CADDY_INGRESS_NETWORKS=caddy_net
+    labels:
+      # caddy-docker-proxy reads this label to enable global config
+      caddy.email: "admin@pscp-css.support"
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  caddy_net:
+    external: true
+    name: caddy_net

@@ -15,8 +15,24 @@ services:
       - VIEWER_PASSWORD_HASH=${VIEWER_PASSWORD_HASH}
     networks:
       - caddy_net
+    # ── caddy-docker-proxy auto-registration ────────────────────────
+    # These labels are read by lucaslorentz/caddy-docker-proxy running
+    # on the same Docker network. No manual Caddyfile editing needed.
     labels:
-      - "caddy.reverse_proxy=vps-portal:5000"
+      # Virtual host — must match your DNS record
+      caddy: vps-control.pscp-css.support
+
+      # Proxy to this container on port 5000
+      caddy.reverse_proxy: "{{upstreams 5000}}"
+
+      # Forward real client IP to Flask
+      caddy.reverse_proxy.header_up: "X-Real-IP {remote_host}"
+
+      # Security headers
+      caddy.header.Strict-Transport-Security: '"max-age=31536000; includeSubDomains; preload"'
+      caddy.header.X-Content-Type-Options: '"nosniff"'
+      caddy.header.X-Frame-Options: '"DENY"'
+      caddy.header.Referrer-Policy: '"strict-origin-when-cross-origin"'
 
 networks:
   caddy_net:
