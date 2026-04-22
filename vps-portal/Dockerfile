@@ -16,9 +16,9 @@ COPY config.py .
 RUN useradd -r -s /bin/false appuser && chown -R appuser:appuser /app
 USER appuser
 
-EXPOSE 5000
+EXPOSE 5030
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+    CMD curl -f http://localhost:5030/health || exit 1
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "4", "--timeout", "120", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5030", "--workers", "2", "--threads", "4", "--timeout", "120", "wsgi:app"]

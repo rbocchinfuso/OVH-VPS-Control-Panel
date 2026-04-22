@@ -22,8 +22,8 @@ services:
       # Virtual host — must match your DNS record
       caddy: vps-control.pscp-css.support
 
-      # Proxy to this container on port 5000
-      caddy.reverse_proxy: "{{upstreams 5000}}"
+      # Proxy to this container on port 5030
+      caddy.reverse_proxy: "{{upstreams 5030}}"
 
       # Forward real client IP to Flask
       caddy.reverse_proxy.header_up: "X-Real-IP {remote_host}"
