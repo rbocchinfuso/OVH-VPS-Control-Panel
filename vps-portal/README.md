@@ -111,13 +111,20 @@ docker run --rm vps-portal-vps-portal python3 -c \
   "from werkzeug.security import generate_password_hash; print(generate_password_hash('newpassword'))"
 ```
 
-If the image hasn't been built yet, build it first:
+If the image hasn't been built yet, build it first: `docker compose build`.
 
-```bash
-docker compose build
-```
+> **Important:** Werkzeug hashes contain `$` characters (e.g. `pbkdf2:sha256:600000$salt$hash`).
+> Docker Compose treats `$` in `.env` values as variable references, so you must escape each one as `$$`:
+> ```
+> ADMIN_PASSWORD_HASH=pbkdf2:sha256:600000$$salt$$hash
+> ```
+> `setup.sh` does this automatically. If you paste a hash manually, run:
+> ```bash
+> echo 'your_hash_here' | sed 's/\$/\$\$/g'
+> ```
+> and use the output in `.env`.
 
-Paste the output into `ADMIN_PASSWORD_HASH` or `VIEWER_PASSWORD_HASH` in `.env`, then restart:
+Paste the escaped output into `ADMIN_PASSWORD_HASH` or `VIEWER_PASSWORD_HASH` in `.env`, then restart:
 
 ```bash
 docker compose restart vps-portal

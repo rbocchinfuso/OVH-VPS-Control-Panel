@@ -31,14 +31,17 @@ ADMIN_USER="${ADMIN_USER:-admin}"
 
 read -rsp "Admin password:            " ADMIN_PASS; echo
 echo "Hashing admin password..."
-ADMIN_HASH=$(hash_password "$ADMIN_PASS")
+# Werkzeug hashes contain '$' (e.g. pbkdf2:sha256:600000$salt$hash).
+# Escape them as '$$' so Docker Compose writes a literal '$' into the
+# container environment instead of treating them as variable references.
+ADMIN_HASH=$(hash_password "$ADMIN_PASS" | sed 's/\$/\$\$/g')
 
 read -rp  "Viewer username  [viewer]: " VIEWER_USER
 VIEWER_USER="${VIEWER_USER:-viewer}"
 
 read -rsp "Viewer password:           " VIEWER_PASS; echo
 echo "Hashing viewer password..."
-VIEWER_HASH=$(hash_password "$VIEWER_PASS")
+VIEWER_HASH=$(hash_password "$VIEWER_PASS" | sed 's/\$/\$\$/g')
 
 # ── Generate Flask secret key using openssl (no python needed) ───
 FLASK_SECRET=$(openssl rand -hex 32)
