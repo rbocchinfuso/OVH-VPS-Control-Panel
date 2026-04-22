@@ -104,11 +104,17 @@ docker compose up -d --force-recreate
 
 ## Adding / changing users
 
-Generate a new password hash:
+Generate a new password hash using the built image (werkzeug is already installed inside it):
 
 ```bash
-docker run --rm python:3.12-slim python3 -c \
+docker run --rm vps-portal-vps-portal python3 -c \
   "from werkzeug.security import generate_password_hash; print(generate_password_hash('newpassword'))"
+```
+
+If the image hasn't been built yet, build it first:
+
+```bash
+docker compose build
 ```
 
 Paste the output into `ADMIN_PASSWORD_HASH` or `VIEWER_PASSWORD_HASH` in `.env`, then restart:
